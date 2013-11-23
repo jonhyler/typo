@@ -29,6 +29,8 @@ describe Article do
 			@bar = Factory(:article, :body => @bar_body, :id => 1398)
 	    @foo_comment = Factory(:comment, :article_id => @foo.id)
 	    @bar_comment = Factory(:comment, :article_id => @bar.id)
+	    @foo.comments = [@foo_comment]
+	    @bar.comments = [@bar_comment]
     end
 	  
 	  it "forbids merging an article with itself" do
@@ -51,12 +53,13 @@ describe Article do
 	  
 	  it "adds comments from another article when merging successfully" do
 		  Article.stub(:find_by_id).and_return(@bar)
-	  	@bar.stub(:comments).and_return([@bar_comment])
-			@bar_comment.should_receive(:save)
-			@bar.should_receive(:comments)
+	  	#@bar.stub(:comments).and_return([@bar_comment])
+			#@bar_comment.should_receive(:save)
+			#@bar.should_receive(:comments)
 			merge_valid()
-			#@foo.comments(true).size.should be 2
-			@bar_comment.article.should be @foo
+			@foo.comments.size.should be 2
+			@foo.comments.should include(@bar_comment)
+			#@bar_comment.article_id.should be @foo.id
 	  end
 	  
 	  it "deletes the merged article when merging successfully" do
