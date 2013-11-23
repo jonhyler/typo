@@ -17,6 +17,8 @@ module NavigationHelpers
       '/'
     when /^the new article page$/
       '/admin/content/new'
+    when /^the edit article page for "(.*)"$/
+      article_edit_path(Article.find_by_title($1))
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
@@ -35,6 +37,12 @@ module NavigationHelpers
       end
     end
   end
+  
+  def article_edit_path(article)
+  	id = article.id
+  	return "/admin/content/edit/#{id}"
+  end
+  
 end
 
 World(NavigationHelpers)
