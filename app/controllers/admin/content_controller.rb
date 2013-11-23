@@ -169,7 +169,7 @@ class Admin::ContentController < Admin::BaseController
       @article.state = "draft" if @article.draft
       
       to_merge = params[:merge_with]
-      if (!to_merge.nil?)
+      if (!to_merge.nil? && current_user.admin?)
       	@article.merge_with(to_merge)
       end
 

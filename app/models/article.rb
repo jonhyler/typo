@@ -421,12 +421,11 @@ class Article < Content
 			other = Article.find_by_id(another_id)
 			if (!other.nil?)
 				self.body += other.body
-				other.comments do |comment|
-					comment.article = self
-					comment.save()
-				end
-				#self.comments.push(other.comments)
-				#self.save()
+				#other.comments do |comment|
+					#comment.article = self
+					#comment.save()
+				#end
+				self.comments.push(other.comments)
 				other = Article.find_by_id(another_id)
 				other.delete()
 			end
