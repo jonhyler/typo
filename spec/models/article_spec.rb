@@ -21,6 +21,57 @@ describe Article do
     end
   end
 
+	describe "merging" do
+		before do
+			@foo_body = "Foo content!"
+			@bar_body = "Bar content!"
+			@foo = Factory(:article, :body => @foo_body, :id => 61)
+			@bar = Factory(:article, :body => @bar_body, :id => 1398)
+	    @foo_comment = Factory(:comment, :article_id => @foo.id)
+	    @bar_comment = Factory(:comment, :article_id => @bar.id)
+    end
+	  
+	  it "forbids merging an article with itself" do
+		  Article.stub(:find_by_id).and_return(@foo)
+	  	@foo.merge_with(@foo.id)
+	  	@foo.body.should == @foo_body
+	  end
+	  
+	  it "forbids merging an article with a non-existed article" do
+	  	Article.stub(:find_by_id).and_return(nil)
+	  	@foo.merge_with(3)
+	  	@foo.body.should == @foo_body
+	  end
+	  
+	  it "adds contents of another article when merging successfully" do
+	  	Article.stub(:find_by_id).and_return(@bar)
+			merge_valid()
+			@foo.body.should include(@bar_body)
+	  end
+	  
+	  it "adds comments from another article when merging successfully" do
+		  Article.stub(:find_by_id).and_return(@bar)
+	  	@bar.stub(:comments).and_return([@bar_comment])
+			@bar_comment.should_receive(:save)
+			@bar.should_receive(:comments)
+			merge_valid()
+			#@foo.comments(true).size.should be 2
+			@bar_comment.article.should be @foo
+	  end
+	  
+	  it "deletes the merged article when merging successfully" do
+	  	Article.stub(:find_by_id).and_return(@bar)
+	  	@bar.should_receive(:delete)
+	  	@bar_comment.should_not_receive(:delete)
+			merge_valid()
+	  end
+	  
+	  def merge_valid
+	  	@foo.merge_with(@bar.id)
+	  end
+	  
+	end
+
   it "test_content_fields" do
     a = Article.new
     assert_equal [:body, :extended], a.content_fields

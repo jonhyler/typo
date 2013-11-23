@@ -544,6 +544,13 @@ describe Admin::ContentController do
         Article.should_not be_exists({:id => draft.id})
         Article.should_not be_exists({:id => draft_2.id})
       end
+      
+      it 'should merge the article with another' do
+				Article.any_instance.should_receive(:merge_with).with(2)
+				Article.any_instance.should_receive(:save)
+  	    post(:edit, 'id' => 1, 'article' => {}, 'merge_with' => 2)
+      end
+            
     end
 
     describe 'resource_add action' do

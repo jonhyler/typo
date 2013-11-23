@@ -167,6 +167,11 @@ class Admin::ContentController < Admin::BaseController
       save_attachments
       
       @article.state = "draft" if @article.draft
+      
+      to_merge = params[:merge_with]
+      if (!to_merge.nil?)
+      	@article.merge_with(to_merge)
+      end
 
       if @article.save
         destroy_the_draft unless @article.draft
